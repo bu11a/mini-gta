@@ -1,0 +1,14 @@
+{
+  "name": "nulevaya-polosa",
+  "version": "1.0.0",
+  "description": "Аркадная игра-погоня от полиции с аккаунтами и гостевым режимом",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
