@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Нулевая полоса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" hidden>
+  <div class="tl"><button id="pauseBtn" class="hb" aria-label="Пауза">II</button>
+    <div class="hb obj"><div class="mn" id="mName"></div><div class="mo" id="mObj"></div><div class="mt" id="mTime"></div></div></div>
+  <div id="stars" class="off"></div>
+  <div id="radio" class="hb off"></div>
+  <div class="tr"><div id="mmWrap"><canvas id="mm"></canvas></div><div id="lose" class="hb">Чисто</div></div>
+  <div class="bl hb"><div id="spd">0<small>км/ч</small></div>
+    <div class="lbl"><span>Прочность</span><span id="hpT"></span></div><div class="bar" id="hpB"><i></i></div>
+    <div class="lbl"><span>Нитро</span><span id="dT"></span></div><div class="bar" id="nB"><i></i></div></div>
+  <div class="br">
+    <button class="ab" data-ab="jam"><b>Q</b><span>Глушилка</span><i></i></button>
+    <button class="ab" data-ab="emp"><b>E</b><span>ЭМИ</span><i></i></button>
+    <button class="ab" data-ab="oil"><b>R</b><span>Масло</span><i></i></button>
+  </div>
+  <div id="arrest" class="hb off"><div>Тебя зажали — двигайся!</div><div class="bar"><i></i></div></div>
+</div>
+
+<div id="touch" hidden>
+  <div class="g"><button data-k="left" aria-label="Влево">◀</button><button data-k="right" aria-label="Вправо">▶</button></div>
+  <div class="g"><div class="col"><button data-k="nitro">Нитро</button><button data-k="hand">Дрифт</button></div><div class="col"><button data-k="down">Тормоз</button></div><button data-k="up" class="gas">Газ</button></div>
+</div>
+
+<div id="menu" class="ov">
+  <div class="wrap">
+    <div class="acct">
+      <span class="who"><span id="acctMode">Гость</span> <b id="acctName"></b></span>
+      <span class="sync" id="acctSync"></span>
+      <span class="acts">
+        <button class="btn ghost sm" id="acctLogin" type="button">Войти</button>
+        <button class="btn sm" id="acctReg" type="button">Создать аккаунт</button>
+        <button class="btn ghost sm" id="acctOut" type="button" hidden>Выйти</button>
+      </span>
+    </div>
+    <h1>Нулевая полоса</h1>
+    <p class="sub">Марка «Ноль» Ветрова подставил начальник полиции Громов. Чтобы доказать невиновность, нужно добыть улики и не попасться: город Порт-Велес гоняется за тобой с первой минуты.</p>
+    <h2>Миссии</h2>
+    <div id="missions" class="grid"></div>
+    <h2>Гараж Лизы <small id="money"></small></h2>
+    <div id="garage" class="grid"></div>
+    <section id="lbSec" hidden>
+      <h2>Рекорды бесконечной погони</h2>
+      <ol id="lb" class="lb"></ol>
+    </section>
+    <h2>Управление</h2>
+    <ul class="help">
+      <li><b>W / ↑</b>газ</li><li><b>S / ↓</b>тормоз и задний ход</li><li><b>A D / ← →</b>руль</li>
+      <li><b>Пробел</b>ручник, дрифт</li><li><b>Shift</b>нитро (заряжается в заносах и на опасных обгонах)</li>
+      <li><b>Q E R</b>глушилка, ЭМИ, масло</li><li><b>P / Esc</b>пауза</li><li><b>M</b>звук вкл/выкл</li>
+    </ul>
+    <h2>Как уйти от погони</h2>
+    <ul class="help">
+      <li>Пропади из виду всех патрулей, и пойдёт таймер потери следа.</li>
+      <li>В крытых тоннелях (серые крыши) след теряется вдвое быстрее, и вертолёт тебя там не видит.</li>
+      <li>Покраска ($400) снимает полторы звезды, если копов нет рядом.</li>
+      <li>Ремонт чинит половину прочности, но добавляет звезду.</li>
+      <li>Если стоять рядом с полицией, тебя арестуют за 2–3 секунды.</li>
+      <li>Заборы можно снести, но это поднимает розыск.</li>
+    </ul>
+    <p class="note" id="storeNote">Гостевой прогресс хранится только в этом браузере.</p>
+  </div>
+</div>
+
+<div id="auth" class="ov" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="aTitle">
+    <h2 id="aTitle">Добро пожаловать</h2>
+    <p id="aSub">Создай аккаунт, чтобы прогресс хранился на сервере и попадал в рекорды, или играй как гость.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" type="button" data-tab="login" role="tab">Вход</button>
+      <button class="tab" type="button" data-tab="register" role="tab">Регистрация</button>
+    </div>
+    <form id="aForm" novalidate>
+      <label>Имя игрока<input id="aUser" name="username" autocomplete="username" maxlength="20" spellcheck="false"></label>
+      <label>Пароль<input id="aPass" name="password" type="password" autocomplete="current-password" maxlength="72"></label>
+      <p class="hint" id="aHint">Имя: 3–20 символов (буквы, цифры, _ и -). Пароль: от 6 символов.</p>
+      <label class="chk" id="aMoveWrap"><input type="checkbox" id="aMove" checked><span id="aMoveTxt">Перенести прогресс гостя</span></label>
+      <p class="err" id="aErr" role="alert"></p>
+      <div class="row">
+        <button class="btn" type="submit" id="aSubmit">Войти</button>
+        <button class="btn ghost" type="button" id="aGuest">Играть как гость</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="pause" class="ov" hidden><div class="panel"><h2>Пауза</h2><p id="pTxt"></p><div class="row"><button class="btn" id="pCont">Продолжить</button><button class="btn ghost" id="pRetry">Заново</button><button class="btn ghost" id="pMenu">В меню</button></div></div></div>
+<div id="result" class="ov" hidden><div class="panel"><div class="meta" id="rAct"></div><h2 id="rTitle"></h2><p id="rText"></p><div class="rstats" id="rStats"></div><div class="row"><button class="btn" id="rNext">Следующая миссия</button><button class="btn ghost" id="rRetry">Ещё раз</button><button class="btn ghost" id="rMenu">В меню</button></div></div></div>
+
+<script src="account.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
